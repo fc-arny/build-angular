@@ -114,5 +114,89 @@ describe('Scope', function(){
             scope.$digest();
             expect(scope.initial).toBe('B.');
         });
+
+        it('gives up on the watchers after 10 iterations', function() {
+            scope.counterA = 0;
+            scope.counterB = 0;
+
+            scope.$watch(
+                function() { return scope.counterA; },
+                function(newValue, oldValue, scope) {
+                    scope.counterB++;
+                }
+            );
+
+            scope.$watch(
+                function() { return scope.counterB; },
+                function(newValue, oldValue, scope) {
+                    scope.counterA++;
+                }
+            );
+
+            expect(function() { scope.$digest(); }).toThrow();
+
+        });
+
+        it('ends digest when the last watcher is clean', function() {
+            scope.array = _.range(100);
+            var watchExecutaions = 0;
+
+            _.times(100, function(i) {
+                scope.$watch(
+                    function() {
+                        watchExecutaions++;
+                        return scope.array[i];
+                    },
+                    function(newValue, oldValue, scope) {}
+                );
+            });
+
+            scope.$digest();
+            expect(watchExecutaions).toBe(200);
+
+            scope.array[0] = 420;
+            scope.$digest();
+            expect(watchExecutaions).toBe(301);
+        });
+
+        it('do not end digest so that new watcher are not run', function() {
+            scope.aValue = 'abc';
+            scope.counter = 0;
+
+            scope.$watch(
+                function() { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    scope.$watch(
+                        function() { return scope.aValue; },
+                        function(newValue, oldValue, scope) {
+                            scope.counter++;
+                        }
+                    );
+                }
+            );
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+        });
+
+        it('compares based on value if enabled', function() {
+            scope.aValue = [1, 2, 3];
+            scope.counter = 0;
+
+            scope.$watch(
+                function() { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    scope.counter++;
+                },
+                true
+            );
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.aValue.push(4);
+            scope.$digest();
+            expect(scope.counter).toBe(2);
+        });
     });
 });
