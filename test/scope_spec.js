@@ -198,5 +198,23 @@ describe('Scope', function(){
             scope.$digest();
             expect(scope.counter).toBe(2);
         });
+
+        it('correctly handles for NANs', function() {
+            scope.number = 0/0;
+            scope.counter = 0;
+
+            scope.$watch(
+                function() { return scope.number; },
+                function(newValue, oldValue, scope) {
+                    scope.counter++;
+                }
+            );
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+        });
     });
 });
