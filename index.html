@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <script type="text/javascript">
+        function fn() {
+            console.log('func');
+            setTimeout(function() {
+                console.log('func - timeout');
+            }, 0);
+        }
+
+        fn();
+
+        var a = 'result';
+        setTimeout(function() {
+            console.log('timeout');
+        }, 0);
+
+
+        var i = 0;
+        while(i < 10000000) {
+            i++;
+        }
+        alert('Yes');
+        console.log('script');
+    </script>
+</body>
+</html>

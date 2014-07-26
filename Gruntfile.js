@@ -9,6 +9,7 @@ module.exports = function (grunt) {
                     jasmine: false,
                     describe: false,
                     it: false,
+                    xit: false,
                     expect: false,
                     beforeEach: false
                 },
