@@ -417,5 +417,84 @@ describe('Scope', function(){
             scope.$digest();
             expect(scope.watchedValue).toBe('changed value');
         });
+
+        it('catches exceptions in watch functions and continues', function() {
+            scope.aValue = 'abc';
+            scope.counter = 0;
+
+            scope.$watch(
+                function(scope) { throw 'Error in watch'; },
+                function(newValue, oldValue, scope) {}
+            );
+
+            scope.$watch(
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    scope.counter++;
+                }
+            );
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+        });
+
+        it('catches exception in listen functions and continues', function() {
+            scope.aValue = 'abc';
+            scope.counter = 0;
+
+            scope.$watch(
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    throw 'Error in listener';
+                }
+            );
+
+            scope.$watch(
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    scope.counter++;
+                }
+            );
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+        });
+
+        it('catches exceptions in $evalAsync', function(done) {
+            scope.aValue = 'abc';
+            scope.counter = 0;
+
+            scope.$watch(
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    scope.counter++;
+                }
+            );
+
+            scope.$evalAsync(function(scope){
+                throw 'Error in evalAsync';
+            });
+
+            setTimeout( function() {
+                expect(scope.counter).toBe(1);
+                done();
+            }, 50);
+        });
+
+        it('catches errors in $postDigest', function() {
+            var didRun = false;
+
+            scope.$$postDigest(function() {
+               throw 'Error in $$postDigest';
+            });
+
+            scope.$$postDigest(function() {
+               didRun = true;
+            });
+
+            scope.$digest();
+            expect(didRun).toBe(true);
+        });
     });
 });
