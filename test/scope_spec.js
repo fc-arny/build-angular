@@ -334,5 +334,88 @@ describe('Scope', function(){
 
 
         });
+
+        it('has a $phase field whose value is current digest phase', function() {
+            scope.aValue = [1,2,3];
+            scope.phaseInWatchFunction = undefined;
+            scope.phaseInListenFunction = undefined;
+            scope.phaseInApplyFunction = undefined;
+
+            scope.$watch(
+                function(scope) {
+                    scope.phaseInWatchFunction = scope.$$phase;
+                    return scope.aValue;
+                },
+                function(newValue, oldValue, scope) {
+                    scope.phaseInListenFunction = scope.$$phase;
+                }
+            );
+
+            scope.$apply(function(scope) {
+                scope.phaseInApplyFunction = scope.$$phase;
+            });
+
+            expect(scope.phaseInWatchFunction).toBe('$digest');
+            expect(scope.phaseInListenFunction).toBe('$digest');
+            expect(scope.phaseInApplyFunction).toBe('$apply');
+        });
+
+        it('schedules a digest in $evalAsync', function(done) {
+            scope.aValue = 'abc';
+            scope.counter = 0;
+
+            scope.$watch(
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) { scope.counter++; }
+            );
+
+            scope.$evalAsync(function(scope) {});
+
+            expect(scope.counter).toBe(0);
+            setTimeout(function() {
+                expect(scope.counter).toBe(1);
+                done();
+            }, 50);
+
+        });
+
+        it('runs a $postDigest function after each digest', function() {
+            scope.counter = 0;
+
+            scope.$$postDigest(function() {
+                scope.counter++;
+            });
+
+            expect(scope.counter).toBe(0);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+        });
+
+        it('does not include $postDigest in the digest', function() {
+            scope.aValue = 'origin value';
+
+            scope.$$postDigest(function() {
+                scope.aValue = 'changed value';
+            });
+
+            scope.$watch(
+                function(scope) {
+                    return scope.aValue;
+                },
+                function(newValue, oldValue, scope) {
+                    scope.watchedValue = newValue;
+                }
+            );
+
+            scope.$digest();
+            expect(scope.watchedValue).toBe('origin value');
+
+            scope.$digest();
+            expect(scope.watchedValue).toBe('changed value');
+        });
     });
 });
