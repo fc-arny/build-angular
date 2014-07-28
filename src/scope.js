@@ -13,6 +13,16 @@ function initWatchVal() {
 
 }
 
+Scope.prototype.$new = function() {
+    var child;
+    var ChildScope = function() {};
+
+    ChildScope.prototype = this;
+    child = new ChildScope();
+
+    return child;
+};
+
 Scope.prototype.$watch = function(watchFn, listenerFn, valueEq) {
     var watcher = {
         watchFn: watchFn,

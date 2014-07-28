@@ -6,27 +6,23 @@
 </head>
 <body>
     <script type="text/javascript">
-        function fn() {
-            console.log('func');
-            setTimeout(function() {
-                console.log('func - timeout');
-            }, 0);
+        function Animal() {
+
         }
 
-        fn();
+        Animal.prototype.type = 'Unknown';
+        Animal.prototype.weight = 0;
+        Animal.prototype.weightUnits = 'kg';
 
-        var a = 'result';
-        setTimeout(function() {
-            console.log('timeout');
-        }, 0);
+        Animal.prototype.toString = function() {
+            return this.type + ', ' + this.weight + this.weightUnits;
+        };
 
+        var molly = new Animal();
+        molly.type = 'Dog';
+        molly.weight = 28;
 
-        var i = 0;
-        while(i < 10000000) {
-            i++;
-        }
-        alert('Yes');
-        console.log('script');
+        console.log(molly.toString());
     </script>
 </body>
 </html>
