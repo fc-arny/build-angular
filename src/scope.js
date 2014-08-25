@@ -61,12 +61,12 @@ Scope.prototype.$watch = function(watchFn, listenerFn, valueEq) {
 };
 
 Scope.prototype.$$digestOnce = function() {
-    var dirty;
+    var dirty = false;
     var continueLoop = true;
     var self = this;
     this.$everyScope(function(scope){
         var newValue, oldValue;
-        _.forEach(scope.$$watchers, function(watcher) {
+        _.forEachRight(scope.$$watchers, function(watcher) {
             try {
                 if(watcher) {
                     newValue = watcher.watchFn(scope);
