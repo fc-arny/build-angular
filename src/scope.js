@@ -72,11 +72,11 @@ Scope.prototype.$$digestOnce = function() {
                     newValue = watcher.watchFn(scope);
                     oldValue = watcher.last;
                     if (! scope.$$areEqual(newValue, oldValue, watcher.valueEq) ) {
-                        self.$$lastDirtyWatch = watcher;
+                        scope.$$root.$$lastDirtyWatch = watcher;
                         watcher.last = watcher.valueEq ? _.cloneDeep(newValue) : newValue;
                         watcher.listenerFn(newValue, (oldValue == initWatchVal ? newValue : oldValue), scope);
                         dirty = true;
-                    } else if ( self.$$lastDirtyWatch === watcher) {
+                    } else if ( scope.$$root.$$lastDirtyWatch === watcher) {
                         continueLoop = false;
                         return false;
                     }
