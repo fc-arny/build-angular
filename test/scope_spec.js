@@ -729,7 +729,8 @@ describe('Scope', function(){
             parent.aValue = 'abc';
             parent.counter = 0;
             parent.$watch(
-                function(scope) { return scope.aValue; }, function(newValue, oldValue, scope) {
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) {
                     scope.counter++;
                 }
             );
@@ -737,6 +738,7 @@ describe('Scope', function(){
 
             setTimeout(function() {
                 expect(parent.counter).toBe(1);
+                done();
             }, 50);
         });
 
