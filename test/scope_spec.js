@@ -767,5 +767,10 @@ describe('Scope', function(){
             expect(child.aValueWas).toBeUndefined();
         });
 
+
+        it('digest its isolated children', function() {
+
+        });
+
     });
 });
