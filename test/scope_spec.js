@@ -769,6 +769,19 @@ describe('Scope', function(){
 
 
         it('digest its isolated children', function() {
+            var parent = new Scope(),
+                child = parent.$new(true);
+
+            child.aValue = 'abc';
+            child.$watch(
+                function(scope) { return scope.aValue; },
+                function(newValue, oldValue, scope) {
+                    scope.aValueWas = newValue;
+                }
+            );
+
+            parent.$digest();
+            expect(child.aValueWas).toBe('abc');
 
         });
 

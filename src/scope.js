@@ -46,8 +46,8 @@ Scope.prototype.$everyScope = function (fn) {
 };
 
 Scope.prototype.$watch = function (watchFn, listenerFn, valueEq) {
-    var self = this;
-    var watcher = {
+    var self = this,
+        watcher = {
         watchFn: watchFn,
         listenerFn: listenerFn || function () {
         },
