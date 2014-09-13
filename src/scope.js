@@ -20,6 +20,7 @@ Scope.prototype.$new = function (isolated) {
 
     if (isolated) {
         child = new Scope();
+        child.$$root = this.$$root;
     } else {
         ChildScope = function () {};
 
@@ -68,9 +69,9 @@ Scope.prototype.$watch = function (watchFn, listenerFn, valueEq) {
 };
 
 Scope.prototype.$$digestOnce = function () {
-    var dirty = false;
-    var continueLoop = true;
-    var self = this;
+    var dirty = false,
+        continueLoop = true,
+        self = this;
     this.$everyScope(function (scope) {
         var newValue, oldValue;
         _.forEachRight(scope.$$watchers, function (watcher) {
@@ -81,7 +82,7 @@ Scope.prototype.$$digestOnce = function () {
                     if (!scope.$$areEqual(newValue, oldValue, watcher.valueEq)) {
                         scope.$$root.$$lastDirtyWatch = watcher;
                         watcher.last = watcher.valueEq ? _.cloneDeep(newValue) : newValue;
-                        watcher.listenerFn(newValue, (oldValue == initWatchVal ? newValue : oldValue), scope);
+                        watcher.listenerFn(newValue, (oldValue === initWatchVal ? newValue : oldValue), scope);
                         dirty = true;
                     } else if (scope.$$root.$$lastDirtyWatch === watcher) {
                         continueLoop = false;
@@ -138,7 +139,7 @@ Scope.prototype.$$areEqual = function (newValue, oldValue, valueEq) {
         return _.isEqual(newValue, oldValue);
     } else {
         return newValue === oldValue ||
-        (typeof newValue == 'number' && typeof oldValue == 'number' && isNaN(newValue) && isNaN(oldValue));
+        (typeof newValue === 'number' && typeof oldValue === 'number' && isNaN(newValue) && isNaN(oldValue));
     }
 };
 
